@@ -27,12 +27,18 @@ export async function fetchOddsData(
     oddsFormat: 'decimal',
   });
 
+  // Format date to YYYY-MM-DDTHH:MM:SSZ (no milliseconds) as required by API
+  const formatDateForAPI = (dateString: string): string => {
+    // Remove milliseconds if present
+    return dateString.replace(/\.\d{3}Z$/, 'Z');
+  };
+
   if (commenceTimeFrom) {
-    params.append('commenceTimeFrom', commenceTimeFrom);
+    params.append('commenceTimeFrom', formatDateForAPI(commenceTimeFrom));
   } else {
     // Default to current date
     const now = new Date().toISOString();
-    params.append('commenceTimeFrom', now);
+    params.append('commenceTimeFrom', formatDateForAPI(now));
   }
 
   const response = await fetch(`${url}?${params.toString()}`);
