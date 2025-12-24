@@ -1,5 +1,3 @@
-'use client';
-
 import ArbitrageList from '@/components/ArbitrageList';
 import { DEFAULT_SPORTS } from '@/config/sports';
 
