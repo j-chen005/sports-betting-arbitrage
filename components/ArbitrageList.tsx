@@ -20,7 +20,7 @@ export default function ArbitrageList({ sports }: ArbitrageListProps) {
     setError(null);
 
     try {
-      const response = await fetch('/api/arbitrage/multiple', {
+      const response = await fetch('/api/arbitrage', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
