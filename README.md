@@ -4,16 +4,14 @@ A Next.js web application that detects and displays sports betting arbitrage opp
 
 ## Features
 
-- 🔍 Automatically detects arbitrage opportunities across multiple sports
+- 🔍 Automatically detects arbitrage opportunities across multiple sports and bookmakers
 - 💰 Displays guaranteed profit calculations
 - 📊 Shows detailed betting strategies for each opportunity
-- 🎯 Filters out unreliable bookmakers (Betfair, Fliff, Bovada)
-- ⚡ Real-time data from The Odds API
-- 🎨 Modern, responsive UI built with Tailwind CSS
 
 ## Tech Stack
 
 - **Framework**: Next.js 16 (App Router)
+- **UI Library**: React 19
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
 - **API**: The Odds API (https://the-odds-api.com/)
@@ -95,71 +93,3 @@ For each match:
     └── sports.ts               # Default sports configuration
 ```
 
-## API Endpoints
-
-### GET `/api/sports`
-Returns a list of available sports from The Odds API.
-
-### GET `/api/arbitrage?sport={sportKey}`
-Fetches arbitrage opportunities for a single sport.
-
-### POST `/api/arbitrage/multiple`
-Fetches arbitrage opportunities for multiple sports.
-
-**Request Body:**
-```json
-{
-  "sports": ["basketball_nba", "soccer_epl"],
-  "commenceTimeFrom": "2024-12-01T00:00:00Z"
-}
-```
-
-## Configuration
-
-### Default Sports
-
-Edit `config/sports.ts` to change which sports are checked by default:
-
-```typescript
-export const DEFAULT_SPORTS = [
-  'basketball_nba',
-  'soccer_epl',
-  // ... add more sports
-];
-```
-
-### Excluded Bookmakers
-
-Edit `lib/arbitrage.ts` to modify the excluded bookmakers list:
-
-```typescript
-const EXCLUDED_BOOKMAKERS = ['Betfair', 'Fliff', 'Bovada'];
-```
-
-### Investment Amount
-
-Edit `lib/arbitrage.ts` to change the default investment amount:
-
-```typescript
-const TOTAL_INVESTMENT = 500; // Change to your preferred amount
-```
-
-## Conversion from Python
-
-This project is a TypeScript conversion of the original Python notebook. Key conversions:
-
-- **pandas DataFrame** → TypeScript arrays and objects
-- **requests** → native `fetch` API
-- **pandas.groupby()** → JavaScript `Map` and array operations
-- **pandas filtering** → JavaScript array `.filter()` method
-
-## Limitations
-
-- API rate limits from The Odds API apply
-- Opportunities may disappear quickly in real-time betting
-- Requires accounts with multiple bookmakers to execute
-- Profit margins are typically small (0.1% - 5%)
-
-## License
-
-MIT
