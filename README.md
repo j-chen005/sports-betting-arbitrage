@@ -4,9 +4,9 @@ A Next.js web application that detects and displays sports betting arbitrage opp
 
 ## Features
 
-- 🔍 Automatically detects arbitrage opportunities across multiple sports and bookmakers
-- 💰 Displays guaranteed profit calculations
-- 📊 Shows detailed betting strategies for each opportunity
+- Automatically detects arbitrage opportunities across multiple sports and bookmakers
+- Displays guaranteed profit calculations
+- Shows detailed betting strategies for each opportunity
 
 ## Tech Stack
 
