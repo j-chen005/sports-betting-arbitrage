@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import ArbitrageCard from './ArbitrageCard';
 import { ArbitrageOpportunity } from '@/types/odds';
 
@@ -45,41 +45,31 @@ export default function ArbitrageList({ sports }: ArbitrageListProps) {
     }
   };
 
-  useEffect(() => {
-    fetchOpportunities();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center py-12">
-        <div className="text-gray-600">Loading arbitrage opportunities...</div>
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
         <div className="text-red-600 mb-4">{error}</div>
         <button
           onClick={fetchOpportunities}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          disabled={loading}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
-          Retry
+          {loading ? 'Loading...' : 'Retry'}
         </button>
       </div>
     );
   }
 
-  if (opportunities.length === 0) {
+  if (opportunities.length === 0 && !loading) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
-        <div className="text-gray-600 mb-4">No arbitrage opportunities found</div>
+        <div className="text-gray-600 mb-4">Click the button below to find arbitrage opportunities</div>
         <button
           onClick={fetchOpportunities}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          disabled={loading}
+          className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed font-semibold text-lg"
         >
-          Refresh
+          {loading ? 'Loading...' : 'Find Arbitrage Opportunities'}
         </button>
       </div>
     );
@@ -89,7 +79,7 @@ export default function ArbitrageList({ sports }: ArbitrageListProps) {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-900">
-          Found {opportunities.length} opportunity{opportunities.length !== 1 ? 'ies' : ''}
+          {loading ? 'Loading...' : `Found ${opportunities.length} opportunity${opportunities.length !== 1 ? 'ies' : ''}`}
         </h2>
         <button
           onClick={fetchOpportunities}
