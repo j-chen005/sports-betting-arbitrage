@@ -10,6 +10,9 @@ interface ArbitrageCardProps {
 export default function ArbitrageCard({ opportunity }: ArbitrageCardProps) {
   const commenceDate = new Date(opportunity.commenceTime);
   const formattedDate = format(commenceDate, 'MMM dd, yyyy h:mm a');
+  
+  // Calculate total investment from bet amounts (more accurate than hardcoded value)
+  const totalInvestment = opportunity.bets.reduce((sum, bet) => sum + bet.betAmount, 0);
 
   return (
     <div className="border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow bg-white">
@@ -63,7 +66,7 @@ export default function ArbitrageCard({ opportunity }: ArbitrageCardProps) {
       </div>
 
       <div className="mt-4 pt-4 border-t flex justify-between text-sm text-gray-600">
-        <span>Total Investment: $500.00</span>
+        <span>Total Investment: ${totalInvestment.toFixed(2)}</span>
         <span>Guaranteed Return: ${opportunity.guaranteedReturn.toFixed(2)}</span>
       </div>
     </div>

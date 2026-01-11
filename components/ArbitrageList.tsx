@@ -19,6 +19,8 @@ export default function ArbitrageList({ sports: initialSports }: ArbitrageListPr
   const [loadingSports, setLoadingSports] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const [totalBetAmount, setTotalBetAmount] = useState<number>(500);
+  const [totalBetAmountInput, setTotalBetAmountInput] = useState<string>('500');
 
   // Fetch available sports on component mount
   useEffect(() => {
@@ -69,6 +71,7 @@ export default function ArbitrageList({ sports: initialSports }: ArbitrageListPr
         body: JSON.stringify({
           sports: selectedSports,
           commenceTimeFrom: new Date().toISOString(),
+          totalInvestment: totalBetAmount,
         }),
       });
 
@@ -134,6 +137,43 @@ export default function ArbitrageList({ sports: initialSports }: ArbitrageListPr
 
   return (
     <div className="space-y-6">
+      {/* Total Bet Amount Section */}
+      <div className="bg-white rounded-lg shadow p-4">
+        <label htmlFor="totalBetAmount" className="block text-sm font-semibold text-gray-900 mb-2">
+          Total Bet Amount ($)
+        </label>
+        <div className="flex items-center gap-3">
+          <input
+            id="totalBetAmount"
+            type="number"
+            min="1"
+            step="1"
+            value={totalBetAmountInput}
+            onChange={(e) => {
+              setTotalBetAmountInput(e.target.value);
+              const value = parseFloat(e.target.value);
+              if (!isNaN(value) && value > 0) {
+                setTotalBetAmount(value);
+              }
+            }}
+            onBlur={(e) => {
+              const value = parseFloat(e.target.value);
+              if (isNaN(value) || value <= 0) {
+                setTotalBetAmountInput(totalBetAmount.toString());
+              } else {
+                setTotalBetAmountInput(value.toString());
+                setTotalBetAmount(value);
+              }
+            }}
+            className="w-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 font-medium"
+          />
+          <span className="text-sm text-gray-600">USD</span>
+        </div>
+        <p className="mt-1 text-xs text-gray-500">
+          The total amount you want to invest across all bets in an arbitrage opportunity
+        </p>
+      </div>
+
       {/* Sports Selection Section */}
       <div className="bg-white rounded-lg shadow p-3">
         <div className="flex justify-between items-center mb-2">

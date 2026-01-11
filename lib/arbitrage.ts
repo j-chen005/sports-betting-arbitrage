@@ -2,13 +2,12 @@ import { ArbitrageOpportunity, OddsRow } from '@/types/odds';
 
 const EXCLUDED_BOOKMAKERS = ['Betfair', 'Fliff', 'Bovada'];
 const MAX_ODDS = 800;
-const TOTAL_INVESTMENT = 500;
 
 interface ProcessedRow extends OddsRow {
   impliedProbability: number;
 }
 
-export function detectArbitrage(oddsData: OddsRow[]): ArbitrageOpportunity[] {
+export function detectArbitrage(oddsData: OddsRow[], totalInvestment: number = 500): ArbitrageOpportunity[] {
   const opportunities: ArbitrageOpportunity[] = [];
 
   // Group by match
@@ -70,7 +69,7 @@ export function detectArbitrage(oddsData: OddsRow[]): ArbitrageOpportunity[] {
         outcome: row.outcome,
         bookmaker: row.bookmaker,
         odds: row.odds,
-        betAmount: (TOTAL_INVESTMENT * row.impliedProbability) / totalMinProb,
+        betAmount: (totalInvestment * row.impliedProbability) / totalMinProb,
         impliedProbability: row.impliedProbability,
       }));
 
@@ -78,7 +77,7 @@ export function detectArbitrage(oddsData: OddsRow[]): ArbitrageOpportunity[] {
       const guaranteedReturn = Math.min(
         ...bets.map((bet) => bet.betAmount * bet.odds)
       );
-      const profit = guaranteedReturn - TOTAL_INVESTMENT;
+      const profit = guaranteedReturn - totalInvestment;
 
       // Get commence time from first row
       const commenceTime = minProbRows[0].commenceTime;
@@ -90,7 +89,7 @@ export function detectArbitrage(oddsData: OddsRow[]): ArbitrageOpportunity[] {
         bets,
         guaranteedReturn,
         profit,
-        profitPercentage: (profit / TOTAL_INVESTMENT) * 100,
+        profitPercentage: (profit / totalInvestment) * 100,
       });
     }
   }

@@ -6,11 +6,18 @@ import { ArbitrageOpportunity } from '@/types/odds';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { sports, commenceTimeFrom } = body;
+    const { sports, commenceTimeFrom, totalInvestment = 500 } = body;
 
     if (!sports || !Array.isArray(sports) || sports.length === 0) {
       return NextResponse.json(
         { error: 'Sports array is required and must not be empty' },
+        { status: 400 }
+      );
+    }
+
+    if (totalInvestment && (typeof totalInvestment !== 'number' || totalInvestment <= 0)) {
+      return NextResponse.json(
+        { error: 'Total investment must be a positive number' },
         { status: 400 }
       );
     }
@@ -35,7 +42,7 @@ export async function POST(request: NextRequest) {
         const oddsData = processOddsData(events, 50);
         console.log(`Processed ${oddsData.length} odds rows for ${sportKey}`);
         
-        const opportunities = detectArbitrage(oddsData);
+        const opportunities = detectArbitrage(oddsData, totalInvestment);
         console.log(`Found ${opportunities.length} arbitrage opportunities for ${sportKey}`);
 
         // Add sport key to each opportunity
