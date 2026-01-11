@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import ArbitrageCard from './ArbitrageCard';
 import { ArbitrageOpportunity, Sport } from '@/types/odds';
 import { DEFAULT_SPORTS } from '@/config/sports';
+import { SPORTSBOOKS, DEFAULT_SPORTSBOOKS, Sportsbook } from '@/config/sportsbooks';
 
 interface ArbitrageListProps {
   sports?: string[];
@@ -12,6 +13,7 @@ interface ArbitrageListProps {
 export default function ArbitrageList({ sports: initialSports }: ArbitrageListProps) {
   const [availableSports, setAvailableSports] = useState<Sport[]>([]);
   const [selectedSports, setSelectedSports] = useState<string[]>([]);
+  const [selectedSportsbooks, setSelectedSportsbooks] = useState<string[]>(DEFAULT_SPORTSBOOKS);
   const [opportunities, setOpportunities] = useState<
     (ArbitrageOpportunity & { sport?: string })[]
   >([]);
@@ -72,6 +74,7 @@ export default function ArbitrageList({ sports: initialSports }: ArbitrageListPr
           sports: selectedSports,
           commenceTimeFrom: new Date().toISOString(),
           totalInvestment: totalBetAmount,
+          sportsbooks: selectedSportsbooks.length > 0 ? selectedSportsbooks : undefined,
         }),
       });
 
@@ -123,6 +126,22 @@ export default function ArbitrageList({ sports: initialSports }: ArbitrageListPr
 
   const handleDeselectAll = () => {
     setSelectedSports([]);
+  };
+
+  const handleSportsbookToggle = (sportsbookKey: string) => {
+    setSelectedSportsbooks(prev => 
+      prev.includes(sportsbookKey)
+        ? prev.filter(key => key !== sportsbookKey)
+        : [...prev, sportsbookKey]
+    );
+  };
+
+  const handleSelectAllSportsbooks = () => {
+    setSelectedSportsbooks(SPORTSBOOKS.map(sb => sb.key));
+  };
+
+  const handleDeselectAllSportsbooks = () => {
+    setSelectedSportsbooks([]);
   };
 
   if (loadingSports) {
@@ -218,6 +237,57 @@ export default function ArbitrageList({ sports: initialSports }: ArbitrageListPr
                 className="w-3.5 h-3.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               />
               <span className="text-xs text-gray-700">{sport.title}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Sportsbooks Selection Section */}
+      <div className="bg-white rounded-lg shadow p-3">
+        <div className="flex justify-between items-center mb-2">
+          <div className="flex items-center gap-3">
+            <h2 className="text-sm font-semibold text-gray-900">Select Sportsbooks</h2>
+            <span className="text-xs text-gray-500">
+              ({selectedSportsbooks.length} of {SPORTSBOOKS.length} selected)
+            </span>
+          </div>
+          <div className="flex gap-1">
+            <button
+              onClick={handleSelectAllSportsbooks}
+              className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+            >
+              All
+            </button>
+            <button
+              onClick={handleDeselectAllSportsbooks}
+              className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+            >
+              None
+            </button>
+          </div>
+        </div>
+        <p className="mb-2 text-xs text-gray-500">
+          Only arbitrage opportunities using the selected sportsbooks will be shown
+        </p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-3 gap-y-1 max-h-48 overflow-y-auto">
+          {SPORTSBOOKS.map(sportsbook => (
+            <label
+              key={sportsbook.key}
+              className="flex items-center space-x-1.5 cursor-pointer hover:bg-gray-50 py-1 px-1 rounded"
+              title={sportsbook.notes || (sportsbook.requiresPaid ? 'Requires paid subscription' : '')}
+            >
+              <input
+                type="checkbox"
+                checked={selectedSportsbooks.includes(sportsbook.key)}
+                onChange={() => handleSportsbookToggle(sportsbook.key)}
+                className="w-3.5 h-3.5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <div className="flex flex-col">
+                <span className="text-xs text-gray-700">{sportsbook.name}</span>
+                {sportsbook.requiresPaid && (
+                  <span className="text-xs text-amber-600">Paid</span>
+                )}
+              </div>
             </label>
           ))}
         </div>

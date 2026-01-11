@@ -43,6 +43,7 @@ export interface OddsRow {
   match: string;
   commenceTime: string;
   bookmaker: string;
+  bookmakerKey: string;
   outcome: string;
   odds: number;
 }

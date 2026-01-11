@@ -1,14 +1,20 @@
 import { ArbitrageOpportunity, OddsRow } from '@/types/odds';
 
-const EXCLUDED_BOOKMAKERS = ['Betfair', 'Fliff', 'Bovada'];
 const MAX_ODDS = 800;
 
 interface ProcessedRow extends OddsRow {
   impliedProbability: number;
 }
 
-export function detectArbitrage(oddsData: OddsRow[], totalInvestment: number = 500): ArbitrageOpportunity[] {
+export function detectArbitrage(
+  oddsData: OddsRow[], 
+  totalInvestment: number = 500,
+  allowedSportsbooks?: string[]
+): ArbitrageOpportunity[] {
   const opportunities: ArbitrageOpportunity[] = [];
+
+  // Create a set of allowed sportsbook keys for fast lookup
+  const allowedSet = allowedSportsbooks ? new Set(allowedSportsbooks) : null;
 
   // Group by match
   const matchGroups = new Map<string, OddsRow[]>();
@@ -21,13 +27,11 @@ export function detectArbitrage(oddsData: OddsRow[], totalInvestment: number = 5
 
   // Process each match
   for (const [match, rows] of matchGroups) {
-    // Filter out excluded bookmakers and high odds
+    // Filter by allowed sportsbooks and high odds
     let filteredRows = rows.filter((row) => {
       if (row.odds > MAX_ODDS) return false;
-      const bookmakerLower = row.bookmaker.toLowerCase();
-      return !EXCLUDED_BOOKMAKERS.some((excluded) =>
-        bookmakerLower.includes(excluded.toLowerCase())
-      );
+      if (allowedSet && !allowedSet.has(row.bookmakerKey)) return false;
+      return true;
     });
 
     if (filteredRows.length === 0) continue;

@@ -62,6 +62,7 @@ export function processOddsData(events: Event[], limit: number = 50): OddsRow[] 
             match: `${event.home_team} vs ${event.away_team}`,
             commenceTime: event.commence_time,
             bookmaker: bookmaker.title,
+            bookmakerKey: bookmaker.key,
             outcome: outcome.name,
             odds: outcome.price,
           });

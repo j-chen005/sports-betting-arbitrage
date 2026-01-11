@@ -6,7 +6,7 @@ import { ArbitrageOpportunity } from '@/types/odds';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { sports, commenceTimeFrom, totalInvestment = 500 } = body;
+    const { sports, commenceTimeFrom, totalInvestment = 500, sportsbooks } = body;
 
     if (!sports || !Array.isArray(sports) || sports.length === 0) {
       return NextResponse.json(
@@ -22,7 +22,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (sportsbooks && (!Array.isArray(sportsbooks) || sportsbooks.length === 0)) {
+      return NextResponse.json(
+        { error: 'Sportsbooks array must not be empty if provided' },
+        { status: 400 }
+      );
+    }
+
     console.log(`Processing ${sports.length} sports for arbitrage opportunities`);
+    if (sportsbooks) {
+      console.log(`Filtering by ${sportsbooks.length} sportsbooks:`, sportsbooks);
+    }
 
     const allOpportunities: (ArbitrageOpportunity & { sport: string })[] = [];
     const errors: string[] = [];
@@ -42,7 +52,7 @@ export async function POST(request: NextRequest) {
         const oddsData = processOddsData(events, 50);
         console.log(`Processed ${oddsData.length} odds rows for ${sportKey}`);
         
-        const opportunities = detectArbitrage(oddsData, totalInvestment);
+        const opportunities = detectArbitrage(oddsData, totalInvestment, sportsbooks);
         console.log(`Found ${opportunities.length} arbitrage opportunities for ${sportKey}`);
 
         // Add sport key to each opportunity
